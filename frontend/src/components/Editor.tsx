@@ -3,10 +3,10 @@ import { StatusIndicator } from './StatusIndicator';
 import { SuggestionPanel } from './SuggestionPanel';
 
 export function Editor() {
-    const { text, setText, status, result, acceptSuggestion, ignoreSuggestion } = useAnalysis({});
+    const { text, setText, status, result, acceptSuggestion, ignoreSuggestion, isRewriteAccepted } = useAnalysis({});
 
-    // Determine if submit is allowed - only when decision is NO_OP (feedback passed check)
-    const isSubmitEnabled = result?.decision?.action === 'NO_OP';
+    // Determine if submit is allowed - when decision is NO_OP OR when rewrite was accepted and text unchanged
+    const isSubmitEnabled = result?.decision?.action === 'NO_OP' || isRewriteAccepted;
 
     const handleSubmit = () => {
         if (isSubmitEnabled) {

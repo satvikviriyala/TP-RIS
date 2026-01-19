@@ -21,7 +21,6 @@ export function SuggestionPanel({ result, onAccept, onIgnore }: SuggestionPanelP
 
     const isRewrite = ['PARTIAL_REWRITE', 'FULL_REWRITE'].includes(decision.action);
     const isClarification = decision.action === 'SUGGEST_CLARIFICATION';
-    const isNoOp = decision.action === 'NO_OP';
     const isFlag = decision.action === 'FLAG';
 
     // Get panel styling based on decision type

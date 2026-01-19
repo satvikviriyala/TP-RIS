@@ -25,14 +25,14 @@ function App() {
             margin: 0,
             letterSpacing: '-0.02em'
           }}>
-            TP-RIS <span style={{ color: '#94a3b8', fontWeight: '400' }}>Feedback Review</span>
+            GentleGiraffe <span style={{ color: '#94a3b8', fontWeight: '400' }}>Academic Review</span>
           </h1>
           <p style={{
             fontSize: '14px',
             color: '#64748b',
             marginTop: '8px'
           }}>
-            Trust-Preserving Review Intelligence System • OFNR-D Analysis
+            Constructive Feedback Assistant
           </p>
         </header>
 

@@ -40,6 +40,8 @@ export function useAnalysis({ initialText = '' }: UseAnalysisProps) {
     const [status, setStatus] = useState<AnalysisStatus>('idle');
     const [result, setResult] = useState<AnalysisResult | null>(null);
     const [lastAnalyzedText, setLastAnalyzedText] = useState('');
+    const [rewriteAccepted, setRewriteAccepted] = useState(false);
+    const [acceptedText, setAcceptedText] = useState('');
 
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const lastRequestTimeRef = useRef<number>(0);
@@ -84,7 +86,7 @@ export function useAnalysis({ initialText = '' }: UseAnalysisProps) {
         console.log('[useAnalysis] Sending request to backend...');
 
         try {
-            const response = await axios.post('http://localhost:8000/analyze-feedback', {
+            const response = await axios.post('/api/analyze-feedback', {
                 review_text: currentText,
             }, {
                 signal: abortControllerRef.current.signal
@@ -145,6 +147,8 @@ export function useAnalysis({ initialText = '' }: UseAnalysisProps) {
             setResult(null);
             setStatus('idle');
             setLastAnalyzedText(result.rewrite.text);
+            setRewriteAccepted(true);
+            setAcceptedText(result.rewrite.text);
         }
     };
 
@@ -153,12 +157,16 @@ export function useAnalysis({ initialText = '' }: UseAnalysisProps) {
         setStatus('idle');
     };
 
+    // Check if text was modified after accepting rewrite
+    const isRewriteStillAccepted = rewriteAccepted && text === acceptedText;
+
     return {
         text,
         setText,
         status,
         result,
         acceptSuggestion,
-        ignoreSuggestion
+        ignoreSuggestion,
+        isRewriteAccepted: isRewriteStillAccepted
     };
 }
