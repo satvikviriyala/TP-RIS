@@ -1,38 +1,17 @@
-import { useState } from 'react';
 import { useAnalysis } from '../hooks/useAnalysis';
 import { StatusIndicator } from './StatusIndicator';
 import { SuggestionPanel } from './SuggestionPanel';
-import axios from 'axios';
 
 export function Editor() {
     const { text, setText, status, result, acceptSuggestion, ignoreSuggestion } = useAnalysis({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Determine if submit is allowed - only when decision is NO_OP (feedback passed check)
-    const isSubmitEnabled = result?.decision?.action === 'NO_OP' && !isSubmitting;
+    const isSubmitEnabled = result?.decision?.action === 'NO_OP';
 
-    const handleSubmit = async () => {
-        if (!isSubmitEnabled || !result) return;
-
-        setIsSubmitting(true);
-
-        try {
-            await axios.post('http://localhost:8000/submit-feedback', {
-                feedback_text: text,
-                observation: result.ofnr_d?.observation,
-                feeling: result.ofnr_d?.feeling,
-                need: result.ofnr_d?.need,
-                request: result.ofnr_d?.request,
-                trust_score: result.trust_assessment?.trust_score
-            });
-
-            alert('Feedback submitted successfully! Saved to submitted_feedback.csv');
+    const handleSubmit = () => {
+        if (isSubmitEnabled) {
+            alert('Feedback submitted successfully!');
             setText('');
-        } catch (error) {
-            console.error('Submit error:', error);
-            alert('Failed to submit feedback. Please try again.');
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -42,7 +21,7 @@ export function Editor() {
             gap: '48px',
             alignItems: 'flex-start'
         }}>
-            {/* Left side - Feedback input (fills available space, aligned with header) */}
+            {/* Left side - Feedback input */}
             <div style={{
                 flex: '1 1 0',
                 minWidth: '400px',
@@ -111,12 +90,12 @@ export function Editor() {
                             boxShadow: isSubmitEnabled ? '0 2px 8px rgba(34, 197, 94, 0.3)' : 'none'
                         }}
                     >
-                        {isSubmitting ? 'Submitting...' : isSubmitEnabled ? '✓ Submit Feedback' : 'Submit Feedback'}
+                        {isSubmitEnabled ? '✓ Submit Feedback' : 'Submit Feedback'}
                     </button>
                 </div>
             </div>
 
-            {/* Right side - Suggestions (smaller fixed width) */}
+            {/* Right side - Suggestions */}
             <div style={{
                 flex: '0 0 380px',
                 position: 'sticky',

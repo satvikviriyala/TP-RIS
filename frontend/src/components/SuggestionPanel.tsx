@@ -17,7 +17,7 @@ interface SuggestionPanelProps {
 export function SuggestionPanel({ result, onAccept, onIgnore }: SuggestionPanelProps) {
     if (!result) return null;
 
-    const { decision, rewrite, trust_assessment, ofnr_d } = result;
+    const { decision, rewrite } = result;
 
     const isRewrite = ['PARTIAL_REWRITE', 'FULL_REWRITE'].includes(decision.action);
     const isClarification = decision.action === 'SUGGEST_CLARIFICATION';
@@ -56,9 +56,6 @@ export function SuggestionPanel({ result, onAccept, onIgnore }: SuggestionPanelP
                     }}>
                         {decision.action.replace('_', ' ')}
                     </span>
-                    <span style={{ fontSize: '12px', color: '#999' }}>
-                        Trust: {(trust_assessment.trust_score * 100).toFixed(0)}%
-                    </span>
                 </div>
                 <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111', margin: 0 }}>
                     {isRewrite ? '✨ Suggestion Available' :
@@ -70,24 +67,6 @@ export function SuggestionPanel({ result, onAccept, onIgnore }: SuggestionPanelP
                     {decision.rationale}
                 </p>
             </div>
-
-            {/* Flags */}
-            {trust_assessment.flags.length > 0 && (
-                <div style={{ marginBottom: '16px' }}>
-                    <strong style={{ fontSize: '12px', color: '#666' }}>Flags: </strong>
-                    {trust_assessment.flags.map((flag, i) => (
-                        <span key={i} style={{
-                            display: 'inline-block',
-                            padding: '2px 6px',
-                            marginLeft: '4px',
-                            fontSize: '11px',
-                            backgroundColor: '#fee2e2',
-                            color: '#991b1b',
-                            borderRadius: '4px'
-                        }}>{flag}</span>
-                    ))}
-                </div>
-            )}
 
             {/* Rewrite suggestion */}
             {isRewrite && rewrite.text && (
@@ -119,26 +98,13 @@ export function SuggestionPanel({ result, onAccept, onIgnore }: SuggestionPanelP
                     <p style={{ color: '#92400e', margin: 0, fontSize: '14px' }}>
                         💡 The feedback could be clearer. Consider specifying what exactly you'd like addressed.
                     </p>
+                    {rewrite.text && (
+                        <p style={{ color: '#333', margin: '12px 0 0 0', whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>
+                            {rewrite.text}
+                        </p>
+                    )}
                 </div>
             )}
-
-            {/* OFNR-D Analysis */}
-            <div style={{
-                backgroundColor: '#f9fafb',
-                padding: '12px',
-                borderRadius: '8px',
-                marginBottom: '16px',
-                fontSize: '12px',
-                color: '#666'
-            }}>
-                <strong style={{ display: 'block', marginBottom: '8px' }}>OFNR-D Analysis:</strong>
-                <div style={{ display: 'grid', gap: '4px' }}>
-                    <div><span style={{ fontWeight: '500' }}>Observation:</span> {ofnr_d.observation || '—'}</div>
-                    <div><span style={{ fontWeight: '500' }}>Feeling:</span> {ofnr_d.feeling || '—'}</div>
-                    <div><span style={{ fontWeight: '500' }}>Need:</span> {ofnr_d.need || '—'}</div>
-                    <div><span style={{ fontWeight: '500' }}>Request:</span> {ofnr_d.request || '—'}</div>
-                </div>
-            </div>
 
             {/* Actions */}
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>

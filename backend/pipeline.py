@@ -1,7 +1,9 @@
 import json
-import re
-import lmstudio as lms
+import requests
 from .models import FeedbackInput, AnalysisResult
+
+OLLAMA_URL = "http://localhost:11434/api/generate"
+MODEL_NAME = "gpt-oss:20b"
 
 SYSTEM_PROMPT = """You are a TP-RIS (Trust-Preserving Review Intelligence System) engine.
 Your goal is to analyze feedback using the OFNR-D framework from Nonviolent Communication (NVC).
@@ -46,7 +48,6 @@ Return ONLY a complete JSON object with ofnr_d, trust_assessment, decision, and 
 
 def extract_complete_json(text: str) -> str:
     """Extract the most complete JSON object containing all required keys."""
-    # Find all potential JSON objects
     candidates = []
     start = 0
     
@@ -82,7 +83,6 @@ def extract_complete_json(text: str) -> str:
         
         start = start_idx + 1
     
-    # Find the candidate with the most required keys
     required_keys = ['ofnr_d', 'trust_assessment', 'decision', 'rewrite']
     best_candidate = ""
     best_score = 0
@@ -102,51 +102,70 @@ def extract_complete_json(text: str) -> str:
 
 def analyze_with_llm(input_data: FeedbackInput) -> AnalysisResult:
     """
-    Orchestrates the TP-RIS analysis via LM Studio.
+    Orchestrates the TP-RIS analysis via Ollama.
     """
     
     user_message = build_user_prompt(input_data)
     full_prompt = f"{SYSTEM_PROMPT}\n\n{user_message}"
     
-    print(f"[Pipeline] Sending prompt to LLM...")
+    print(f"[Pipeline] Sending prompt to Ollama ({MODEL_NAME})...")
     
     try:
-        with lms.Client() as client:
-            model = client.llm.model("openai/gpt-oss-20b")
-            
-            result = model.respond(full_prompt)
-            
-            raw_content = str(result).strip()
-            print(f"[Pipeline] Raw LLM response length: {len(raw_content)}")
-            
-            # Clean markdown fences if present
-            content = raw_content
-            if "```json" in content:
-                content = content.split("```json", 1)[-1]
-            if "```" in content:
-                content = content.split("```")[0]
-            
-            # Extract the most complete JSON object
-            json_str = extract_complete_json(content)
-            
-            if not json_str:
-                print(f"[Pipeline] No valid JSON found in response")
-                raise ValueError("No valid JSON found in LLM response")
-            
-            print(f"[Pipeline] Extracted JSON length: {len(json_str)}")
-            
-            data_dict = json.loads(json_str)
-            
-            # Ensure all required keys exist with defaults
-            if 'decision' not in data_dict:
-                data_dict['decision'] = {'action': 'NO_OP', 'rationale': 'Analysis complete'}
-            if 'rewrite' not in data_dict:
-                data_dict['rewrite'] = {'text': None, 'explanation': None}
-            
-            validated_output = AnalysisResult(**data_dict)
-            print(f"[Pipeline] Successfully parsed response, decision: {validated_output.decision.action}")
-            return validated_output
+        response = requests.post(
+            OLLAMA_URL,
+            json={
+                "model": MODEL_NAME,
+                "prompt": full_prompt,
+                "stream": False,
+                "options": {
+                    "temperature": 0.2
+                }
+            },
+            timeout=120
+        )
+        response.raise_for_status()
+        
+        result_data = response.json()
+        raw_content = result_data.get("response", "").strip()
+        print(f"[Pipeline] Raw LLM response length: {len(raw_content)}")
+        
+        # Clean markdown fences if present
+        content = raw_content
+        if "```json" in content:
+            content = content.split("```json", 1)[-1]
+        if "```" in content:
+            content = content.split("```")[0]
+        
+        json_str = extract_complete_json(content)
+        
+        if not json_str:
+            print(f"[Pipeline] No valid JSON found in response")
+            raise ValueError("No valid JSON found in LLM response")
+        
+        print(f"[Pipeline] Extracted JSON length: {len(json_str)}")
+        
+        data_dict = json.loads(json_str)
+        
+        if 'decision' not in data_dict:
+            data_dict['decision'] = {'action': 'NO_OP', 'rationale': 'Analysis complete'}
+        if 'rewrite' not in data_dict:
+            data_dict['rewrite'] = {'text': None, 'explanation': None}
+        
+        validated_output = AnalysisResult(**data_dict)
+        print(f"[Pipeline] Successfully parsed response, decision: {validated_output.decision.action}")
+        return validated_output
 
+    except requests.exceptions.RequestException as e:
+        print(f"[Pipeline] Ollama request error: {e}")
+        return AnalysisResult(
+            ofnr_d={
+                "observation": None, "feeling": None, "need": None, "request": None,
+                "confidence": {"observation": 0, "feeling": 0, "need": 0, "request": 0}
+            },
+            trust_assessment={"trust_score": 0.0, "flags": ["connection_error"]},
+            decision={"action": "NO_OP", "rationale": f"Could not connect to Ollama: {str(e)}"},
+            rewrite={"text": None, "explanation": None}
+        )
     except json.JSONDecodeError as e:
         print(f"[Pipeline] JSON parse error: {e}")
         return AnalysisResult(
