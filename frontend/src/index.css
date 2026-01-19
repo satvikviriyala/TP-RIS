@@ -1,0 +1,7 @@
+/* Minimal CSS - Tailwind disabled for debugging */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: #f5f5f5;
+}
