@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from .models import FeedbackInput, AnalysisResult
-from .pipeline import analyze_with_llm
+from models import FeedbackInput, AnalysisResult
+from pipeline import analyze_with_llm
 
 app = FastAPI(title="TP-RIS Offline Backend")
 

@@ -1,6 +1,6 @@
 import json
 import requests
-from .models import FeedbackInput, AnalysisResult
+from models import FeedbackInput, AnalysisResult
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL_NAME = "gpt-oss:20b"
