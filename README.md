@@ -1,10 +1,10 @@
-# 🦒 GentleGiraffe - Academic Feedback Assistant
+#  GentleGiraffe - Academic Feedback Assistant
 
 > **Pilot Project Notice**: This project has been launched as a **pilot initiative** to collect constructive feedback from students during mid-semester examinations. We are actively seeking student input to evaluate the system's effectiveness in helping craft professional, actionable academic feedback.
 
 ---
 
-## 📋 Overview
+##  Overview
 
 **GentleGiraffe** (formerly TP-RIS: Trust-Preserving Review Intelligence System) is an AI-powered academic feedback assistant designed to help students and educators provide constructive, professional, and actionable feedback in academic settings.
 
@@ -12,7 +12,7 @@ The system analyzes user-written feedback in real-time and provides intelligent 
 
 ---
 
-## 🎯 Purpose
+##  Purpose
 
 The primary goal of GentleGiraffe is to:
 
@@ -23,7 +23,7 @@ The primary goal of GentleGiraffe is to:
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
 ### 1. Real-Time Feedback Analysis
 - Automatically analyzes feedback text once it exceeds 80 characters
@@ -64,7 +64,7 @@ The AI classifies feedback into five categories:
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -87,7 +87,7 @@ The AI classifies feedback into five categories:
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -146,7 +146,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
-## 🔧 Configuration
+##  Configuration
 
 ### Changing the AI Model
 
@@ -163,7 +163,7 @@ MODEL_NAME = "gemma3:27b"  # or "gpt-oss:20b", "qwen3:235b", etc.
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 TP-RIS/
@@ -189,7 +189,7 @@ TP-RIS/
 
 ---
 
-## 🎓 How to Use (For Students)
+##  How to Use (For Students)
 
 1. **Open the Application**: Navigate to the provided URL
 2. **Write Your Feedback**: Type your feedback in the editor (minimum 80 characters)
@@ -206,7 +206,7 @@ TP-RIS/
 
 ---
 
-## 📊 Pilot Program Information
+##  Pilot Program Information
 
 ### Goals
 - Evaluate the effectiveness of AI-assisted feedback improvement
@@ -221,7 +221,7 @@ Your participation in this pilot helps us improve academic communication tools. 
 
 ---
 
-## 🛠️ Troubleshooting
+##  Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
@@ -232,14 +232,14 @@ Your participation in this pilot helps us improve academic communication tools. 
 
 ---
 
-## 👥 Credits
+##  Credits
 
 **Developed by**: ScaDS AI Lab  
 **Project Lead**: Satvik Viriyala
 
 ---
 
-## 📄 License
+##  License
 
 This project is developed for academic research purposes at Leipzig University.
 
